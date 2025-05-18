@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int        @id @default(autoincrement())
+  email         String     @unique
+  password      String
+  name          String
+  studentId     String     @unique
+  balance       Float      @default(0)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  printJobs     PrintJob[]
+}
+
+model PrintJob {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  fileName    String
+  fileUrl     String
+  copies      Int      @default(1)
+  pages       Int
+  status      String   @default("pending") // pending, printing, completed, failed
+  cost        Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model PrintingRate {
+  id          Int      @id @default(autoincrement())
+  type        String   // black_white, color
+  rate        Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
